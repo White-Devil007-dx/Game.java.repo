@@ -3,6 +3,8 @@ public class Game {
         Knight igris = new Knight();
         ninja naruto = new ninja();
         Dragon toothless = new Dragon();
+        ninja kakashi = new ninja();
+        kakashi.showStats();
         
         toothless.takeDamage(igris.attack);
         naruto.takeDamage(toothless.attack);
@@ -59,7 +61,8 @@ class ninja extends character implements Stealth{
     }
     @Override
     void showStats(){
-        System.out.println("Ninja Health:" + this.health + "Ninja attack:" + this.attack);
+        System.out.println("Ninja Health:" + this.health );
+        System.out.println("Ninja attack:" + this.attack);
 
     }
     @Override
