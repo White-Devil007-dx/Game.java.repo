@@ -103,7 +103,7 @@ class Necromancer extends Character implements Magic, DarkMagic{
     }
     @Override
     public void commandSkeletons(Character target){
-        target.health -= skeletons*3;  //Each skeleton deals 3 damage instantly 
+        target.health -= skeletons*3;  //Each skeleton deals 3 damage instantly.
         System.out.println("The skeletons did " + skeletons*3 + " damage");
     }
     @Override
