@@ -1,105 +1,259 @@
 public class Game {
     public static void main(String[] args){
-        Knight igris = new Knight();
-        ninja naruto = new ninja();
-        Dragon toothless = new Dragon();
-        
-        toothless.takeDamage(igris.attack);
-        naruto.takeDamage(toothless.attack);
-        naruto.invisible();
-        toothless.takeDamage(igris.attack);
-        toothless.invisible();
-        toothless.heal();
-        igris.takeDamage(toothless.attack);
-        igris.showStats();
-        toothless.showStats();
-        naruto.showStats();
+        Knight Igris = new Knight();
+        Ninja Naruto = new Ninja();
+        Dragon Toothless = new Dragon();
+        Healer Angel = new Healer();
+        Necromancer Leoric = new Necromancer();
 
+        Toothless.showStats();
+        Igris.showStats();
+        Naruto.showStats();
+        Angel.showStats();
+
+        Leoric.summonSkeletons(30);
+        Leoric.commandSkeletons(Toothless);
+
+        Toothless.showStats();
+        
         
     }
 }
 
-abstract class character{
+abstract class Character {
     protected int health;
     protected int attack;
-    public character(int health,int attack){
+
+    public Character(int health,int attack){
         this.health = health;
         this.attack = attack;
     }
+
     abstract void takeDamage(int x);
     abstract void showStats();
-
 }
-interface Villian{
-    public void fly();
-    public void heal();
+
+interface Villain {
+    void fly();
+    void heal();
+}
+
+interface Stealth {
+    void invisible();
+    void sneakAttack(Character target);
+}
+
+interface Magic {
+    void heal(Character target);
+    void regenerateMana();
+}
+
+interface DarkMagic {
+    void summonSkeletons(int count);
+    void commandSkeletons(Character target);
+    void darkMeditation(int SacrificeCount); // kills some skeletons but restores mana significantly
+
     
 }
-interface Stealth{
-    public void invisible();
+
+class Necromancer extends Character implements Magic, DarkMagic{
+    private int mana;
+    private int skeletons;
+    public Necromancer(){
+        super(150,10);
+        this.mana = 150;
+        this.skeletons = 0;
+    }
+
+    void takeDamage(int x){
+        System.out.println(getClass().getSimpleName() + " took " + x + " damage");
+        health -= x;
+    }
+    void showStats(){
+        System.out.println(getClass().getSimpleName() + 
+                            " Health:" + health + 
+                            " Attack:" + attack +
+                            " Mana:" + mana + 
+                            " Skeletons:" + skeletons);
+
+    }
+    @Override
+    public void heal(Character target){
+        if(mana >= 40){
+            target.health += 20;
+            mana -= 40;
+            System.out.println(getClass().getSimpleName() + " healed " + 
+                               target.getClass().getSimpleName() + " for 20 HP!");
+        } else {
+            System.out.println("Not enough mana to heal");
+        }
+    }
+    @Override
+    public void regenerateMana(){
+        System.out.println("10 health is consumed for 30 mana for" + getClass().getSimpleName());
+        mana += 30;
+        health -= 10;
+
+    }
+    @Override
+    public void summonSkeletons(int count){
+        skeletons += count;
+        mana -= count*6;//Each skeleton costs 6 mana
+        System.out.println("*** " + count + " were summoned by " + getClass().getSimpleName());
+    }
+    @Override
+    public void commandSkeletons(Character target){
+        target.health -= skeletons*3;  //Each skeleton deals 3 damage instantly 
+        System.out.println("The skeletons did " + skeletons*3 + " damage");
+    }
+    @Override
+    public void darkMeditation(int SacrificeCount){
+        if(SacrificeCount <= skeletons){
+            System.out.println("***Ritual SUCCESSFUL***");
+            skeletons -= SacrificeCount;
+            mana += SacrificeCount*4;   //Soul tax is applied of 2 mana.
+            System.out.println("Sacrificed " + SacrificeCount + " skeletons for " + SacrificeCount*4 + " mana");
+        }
+        else{
+            System.out.println("***Ritual FAILED***");
+            System.out.println("Cannot Sacrifice");
+        }
+    }
 }
-class Knight extends character {// 100,10
+
+class Healer extends Character implements Magic {
+    private int mana;
+
+    public Healer(){
+        super(80,5);
+        this.mana = 100;
+    }
+    
+    
+    void showStats() {
+        System.out.println(getClass().getSimpleName() + 
+                           " Health:" + health + 
+                           " Attack:" + attack + 
+                           " Mana:" + mana);
+    }
+
+    
+    void takeDamage(int x){
+        System.out.println(getClass().getSimpleName() + " took " + x + " damage");
+        health -= x;
+    }
+
+    @Override
+    public void heal(Character target){
+        if(mana >= 20){
+            target.health += 40;
+            mana -= 20;
+            System.out.println(getClass().getSimpleName() + " healed " + 
+                               target.getClass().getSimpleName() + " for 40 HP!");
+        } else {
+            System.out.println("Not enough mana to heal");
+        }
+    }
+
+    @Override
+    public void regenerateMana(){
+        System.out.println("20 health is consumed for 30 mana for" + getClass().getSimpleName());
+        mana += 30;
+        health -= 20;
+        
+    }
+}
+
+class Knight extends Character {
     public Knight(){
         super(100,10);
     }
-    @Override
-    void showStats(){
-        System.out.println("Knight Health:" + this.health + "Knight attack:" + this.attack);
 
+    
+    void showStats(){
+        System.out.println(getClass().getSimpleName() + 
+                           " Health:" + health + 
+                           " Attack:" + attack);
     }
-    @Override
+
+    
     void takeDamage(int x){
-        System.out.println("Knight took " + x + "damage");
+        System.out.println(getClass().getSimpleName() + " took " + x + " damage");
         health -= x;
     }
 }
-class ninja extends character implements Stealth{
-    public ninja(){
+
+class Ninja extends Character implements Stealth {
+    public Ninja(){
         super(80,5);
     }
-    @Override
+    
+    
     void showStats(){
-        System.out.println("Ninja Health:" + this.health + "Ninja attack:" + this.attack);
-
+        System.out.println(getClass().getSimpleName() + 
+                           " Health:" + health + 
+                           " Attack:" + attack);
     }
-    @Override
+    
+    
     void takeDamage(int x){
-        System.out.println("Ninja took" + x + "damage");
+        System.out.println(getClass().getSimpleName() + " took " + x + " damage");
         health -= x;
-
     }
+
     @Override
     public void invisible(){
-        System.out.println("Ninja now in Stealth mode");
+        System.out.println(getClass().getSimpleName() + " now in Stealth mode");
+    }
+
+    @Override
+    public void sneakAttack(Character target){
+        System.out.println(getClass().getSimpleName() + 
+                           " dealt 20 damage in stealth mode to " + 
+                           target.getClass().getSimpleName());
+        target.health -= 20;
     }
 }
-class Dragon extends character implements Villian,Stealth{
+
+class Dragon extends Character implements Villain, Stealth {
     public Dragon(){
         super(200,15);
     }
-    @Override
-    void showStats(){
-        System.out.println("Dragon Health:" + this.health + "Dragon attack:" + this.attack);
 
+    
+    void showStats(){
+        System.out.println(getClass().getSimpleName() + 
+                           " Health:" + health + 
+                           " Attack:" + attack);
     }
-    @Override
-     void takeDamage(int x){
-        System.out.println("Dragon took" + x +  "damage");
+
+    
+    void takeDamage(int x){
+        System.out.println(getClass().getSimpleName() + " took " + x + " damage");
         health -= x;
     }
+
     @Override
     public void fly(){
-        System.out.println("Dragon flew away");
+        System.out.println(getClass().getSimpleName() + " flew away");
     }
+
     @Override
     public void heal(){
-        System.out.println("Dragon healed 25 hp");
         health += 25;
+        System.out.println(getClass().getSimpleName() + " healed 25 HP");
     }
+
     @Override
     public void invisible(){
-        System.out.println("Dragon vanished into smoke");
+        System.out.println(getClass().getSimpleName() + " vanished into smoke");
+    }
+
+    @Override
+    public void sneakAttack(Character target){
+        System.out.println(getClass().getSimpleName() + 
+                           " dealt 25 damage in stealth mode to " + 
+                           target.getClass().getSimpleName());
+        target.health -= 25;
     }
 }
-
-
